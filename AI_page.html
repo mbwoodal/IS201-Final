@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Random Number Guesser</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding-top: 60px; /* space for sticky nav */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #4b6cb7;
+      font-weight: bold;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #a777e3;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      font-size: 18px;
+      border: 2px solid #aaa;
+      border-radius: 10px;
+      width: 80px;
+      transition: 0.3s;
+    }
+
+    input[type="number"]:focus {
+      border-color: #6e8efb;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: #6e8efb;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #4b6cb7;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .fade-out {
+      animation: fadeOut 1s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; transform: scale(0.9); }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="favoriterecipes.html">Favorite Recipes</a>
+  <a href="AI_page.html">Number Guessing</a>
+  <a href = "tableau.html">Tableau</a>
+  <a href="resume.html">My Resume</a>
+</nav>
+
+<div class="container" id="gameContainer">
+  <h1>Guess the Number (1–10)</h1>
+  <input type="number" id="guessInput" min="1" max="10" />
+  <br />
+  <button onclick="submitGuess()">Submit</button>
+  <div class="message" id="message"></div>
+  <button id="playAgainBtn" class="hidden" onclick="resetGame()">Play Again</button>
+</div>
+
+<script>
+  let randomNumber = generateRandomNumber();
+  let attempts = 0;
+  const maxAttempts = 5;
+  const input = document.getElementById('guessInput');
+  const message = document.getElementById('message');
+  const playAgainBtn = document.getElementById('playAgainBtn');
+  const container = document.getElementById('gameContainer');
+
+  input.focus();
+
+  function generateRandomNumber() {
+    return Math.floor(Math.random() * 10) + 1;
+  }
+
+  function submitGuess() {
+    const guess = parseInt(input.value);
+
+    if (isNaN(guess) || guess < 1 || guess > 10) {
+      showMessage("Please enter a number between 1 and 10.", "orange");
+      return;
+    }
+
+    attempts++;
+
+    if (guess === randomNumber) {
+      showMessage(`🎉 You guessed it right in ${attempts} tries!`, "green");
+      endGame();
+    } else if (attempts >= maxAttempts) {
+      showMessage(`😢 You lose! The number was ${randomNumber}.`, "red");
+      endGame();
+    } else {
+      const hint = guess < randomNumber ? "Too low!" : "Too high!";
+      showMessage(`${hint} Attempts left: ${maxAttempts - attempts}`, "blue");
+    }
+
+    input.value = '';
+    input.focus();
+  }
+
+  function showMessage(text, color) {
+    message.style.color = color;
+    message.textContent = text;
+    message.classList.remove("fade-out");
+  }
+
+  function endGame() {
+    input.disabled = true;
+    playAgainBtn.classList.remove("hidden");
+  }
+
+  function resetGame() {
+    randomNumber = generateRandomNumber();
+    attempts = 0;
+    input.disabled = false;
+    input.value = '';
+    message.textContent = '';
+    playAgainBtn.classList.add("hidden");
+    input.focus();
+  }
+
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      submitGuess();
+    }
+  });
+</script>
+
+</body>
+</html>
